@@ -1,0 +1,533 @@
+<!DOCTYPE html>
+<html lang="pt-BR" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Painel Interativo da LGPD para TI</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Chosen Palette: Calm Harmony -->
+    <!-- Application Structure Plan: Maintained the single-page dashboard with thematic sections. Enhanced the 'Atores' section with a more visual, horizontal flowchart. Added a new interactive section, 'Teste seu Conhecimento', with a scenario-based quiz to improve user engagement and knowledge retention, a key goal for a study tool. This new section makes the application more active and less passive. Added icons to improve visual scanning and comprehension. -->
+    <!-- Visualization & Content Choices: 
+        - Report Info: Roles of Controller, Operator, DPO. Goal: Show Relationships. Viz/Presentation: Enhanced from a simple vertical list to a horizontal CSS-based flowchart with connecting lines. Interaction: Click to update detail pane. Justification: The new layout better visualizes the operational hierarchy and data flow. Library/Method: HTML/Tailwind, JS.
+        - Report Info: Practical application of LGPD concepts. Goal: Test Knowledge & Engage. Viz/Presentation: New 'Teste seu Conhecimento' section with multiple-choice questions. Interaction: User selects an answer and receives immediate feedback and explanation. Justification: Transforms the tool from a passive information source to an active learning environment, which is highly effective for exam preparation. Library/Method: HTML/Tailwind, JS for quiz logic.
+        - Report Info: Principles, Rights. Goal: Improve Visual Appeal. Viz/Presentation: Added Unicode icons to cards. Interaction: Unchanged (click for modal). Justification: Icons act as quick visual cues, making the interface more intuitive. Library/Method: HTML/Unicode.
+        - CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f8fafc; /* slate-50 */
+        }
+        .nav-link {
+            transition: color 0.3s, border-bottom-color 0.3s;
+        }
+        .card {
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+        }
+        .modal {
+            display: none;
+            transition: opacity 0.3s ease;
+        }
+        .modal-content {
+            transition: transform 0.3s ease;
+        }
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 800px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 400px;
+            max-height: 50vh;
+        }
+        .quiz-option {
+            transition: background-color 0.2s, border-color 0.2s, transform 0.2s;
+        }
+        .quiz-option:hover {
+            transform: scale(1.02);
+            border-color: #14b8a6; /* teal-500 */
+        }
+    </style>
+</head>
+<body class="text-slate-700">
+
+    <header class="bg-white/80 backdrop-blur-lg sticky top-0 z-40 shadow-sm">
+        <nav class="container mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                <div class="flex-shrink-0">
+                    <h1 class="text-xl font-bold text-teal-700">Painel Interativo da LGPD</h1>
+                </div>
+                <div class="hidden md:block">
+                    <div class="ml-10 flex items-baseline space-x-4">
+                        <a href="#visao-geral" class="nav-link text-slate-600 hover:text-teal-600 px-3 py-2 rounded-md text-sm font-medium border-b-2 border-transparent hover:border-teal-600">Visão Geral</a>
+                        <a href="#pilares" class="nav-link text-slate-600 hover:text-teal-600 px-3 py-2 rounded-md text-sm font-medium border-b-2 border-transparent hover:border-teal-600">Pilares</a>
+                        <a href="#atores" class="nav-link text-slate-600 hover:text-teal-600 px-3 py-2 rounded-md text-sm font-medium border-b-2 border-transparent hover:border-teal-600">Atores</a>
+                        <a href="#pratica" class="nav-link text-slate-600 hover:text-teal-600 px-3 py-2 rounded-md text-sm font-medium border-b-2 border-transparent hover:border-teal-600">Prática</a>
+                        <a href="#teste-conhecimento" class="nav-link text-slate-600 hover:text-teal-600 px-3 py-2 rounded-md text-sm font-medium border-b-2 border-transparent hover:border-teal-600">Quiz</a>
+                        <a href="#sancoes" class="nav-link text-slate-600 hover:text-teal-600 px-3 py-2 rounded-md text-sm font-medium border-b-2 border-transparent hover:border-teal-600">Sanções</a>
+                    </div>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section id="visao-geral" class="py-16 sm:py-20 bg-white">
+            <div class="container mx-auto px-4 sm:px-6 lg:px-8 text-center">
+                <h2 class="text-3xl font-bold tracking-tight text-teal-800 sm:text-4xl">Desmistificando a LGPD para Profissionais de TI</h2>
+                <p class="mt-4 text-lg leading-8 text-slate-600 max-w-3xl mx-auto">Esta é uma ferramenta de estudo interativa, projetada para traduzir a complexidade da Lei Geral de Proteção de Dados em conceitos claros e aplicáveis ao dia a dia da tecnologia. Navegue pelas seções para explorar os fundamentos, direitos, responsabilidades e os impactos práticos da LGPD no desenvolvimento e gestão de sistemas.</p>
+            </div>
+        </section>
+
+        <section id="pilares" class="py-16 sm:py-20">
+            <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="text-center">
+                    <h2 class="text-3xl font-bold tracking-tight text-slate-900 sm:text-4xl">Os Pilares da LGPD</h2>
+                    <p class="mt-4 text-lg leading-8 text-slate-600 max-w-3xl mx-auto">Esta seção é o coração da LGPD. Explore os três pilares fundamentais que sustentam a lei: os Princípios que guiam o tratamento, as Bases Legais que o autorizam, e os Direitos que empoderam o cidadão. Clique em cada item para desvendar seus detalhes e implicações técnicas.</p>
+                </div>
+
+                <div class="mt-12">
+                    <div class="space-y-12">
+                        <div>
+                            <h3 class="text-2xl font-semibold text-teal-700 mb-6">Os 10 Princípios (Art. 6º)</h3>
+                            <div id="principios-grid" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4 sm:gap-6"></div>
+                        </div>
+                        <div>
+                            <h3 class="text-2xl font-semibold text-teal-700 mb-6">As 10 Bases Legais (Art. 7º)</h3>
+                            <div id="bases-grid" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4 sm:gap-6"></div>
+                        </div>
+                        <div>
+                            <h3 class="text-2xl font-semibold text-teal-700 mb-6">Direitos dos Titulares (Art. 18)</h3>
+                            <div id="direitos-grid" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-3 gap-4 sm:gap-6"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="atores" class="py-16 sm:py-20 bg-white">
+            <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="text-center">
+                    <h2 class="text-3xl font-bold tracking-tight text-slate-900 sm:text-4xl">Atores e Responsabilidades</h2>
+                    <p class="mt-4 text-lg leading-8 text-slate-600 max-w-3xl mx-auto">A LGPD define papéis claros no ecossistema de tratamento de dados. Compreender quem é quem é fundamental para delimitar responsabilidades. Interaja com o diagrama abaixo para ver as atribuições de cada um.</p>
+                </div>
+                <div class="mt-12 flex flex-col items-center gap-8">
+                    <div class="w-full flex flex-col md:flex-row justify-center items-center md:items-stretch gap-8">
+                        <div id="ator-controlador" class="ator-box border-2 border-teal-500 bg-teal-50 p-4 rounded-lg shadow-md w-full max-w-xs text-center cursor-pointer flex flex-col justify-center">
+                            <h4 class="font-bold text-lg text-teal-800">Controlador</h4>
+                            <p class="text-sm text-teal-700">Define o "porquê" e o "como"</p>
+                        </div>
+                        <div class="flex items-center text-2xl text-slate-400 font-mono">&lt;--&gt;</div>
+                        <div id="ator-operador" class="ator-box border-2 border-amber-500 bg-amber-50 p-4 rounded-lg shadow-md w-full max-w-xs text-center cursor-pointer flex flex-col justify-center">
+                            <h4 class="font-bold text-lg text-amber-800">Operador</h4>
+                            <p class="text-sm text-amber-700">Executa em nome do Controlador</p>
+                        </div>
+                    </div>
+                    <div class="h-8 w-px bg-slate-300 md:h-px md:w-8"></div>
+                    <div id="ator-dpo" class="ator-box border-2 border-sky-500 bg-sky-50 p-4 rounded-lg shadow-md w-full max-w-xs text-center cursor-pointer flex flex-col justify-center">
+                         <h4 class="font-bold text-lg text-sky-800">Encarregado (DPO)</h4>
+                        <p class="text-sm text-sky-700">Ponte de comunicação</p>
+                    </div>
+                    <div class="w-full lg:w-3/4 mt-4 p-6 bg-slate-100 rounded-lg min-h-[200px]">
+                        <h3 id="ator-detalhe-titulo" class="text-2xl font-bold text-slate-800">Selecione um ator</h3>
+                        <p id="ator-detalhe-descricao" class="mt-2 text-slate-600">Clique em um dos papéis acima para ver sua definição, responsabilidades e as implicações técnicas para a equipe de TI.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="pratica" class="py-16 sm:py-20">
+            <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="text-center">
+                    <h2 class="text-3xl font-bold tracking-tight text-slate-900 sm:text-4xl">LGPD na Prática</h2>
+                    <p class="mt-4 text-lg leading-8 text-slate-600 max-w-3xl mx-auto">Veja como os conceitos da LGPD se comparam com o regulamento europeu (GDPR) e entenda os princípios de engenharia de software que materializam a proteção de dados.</p>
+                </div>
+                <div class="mt-12 space-y-16">
+                    <div>
+                        <h3 class="text-2xl font-semibold text-teal-700 mb-6 text-center">LGPD vs. GDPR: Análise Comparativa</h3>
+                        <div class="overflow-x-auto">
+                            <table class="min-w-full bg-white shadow-md rounded-lg">
+                                <thead class="bg-slate-100">
+                                    <tr>
+                                        <th class="text-left py-3 px-4 font-semibold text-sm text-slate-600">Critério</th>
+                                        <th class="text-left py-3 px-4 font-semibold text-sm text-slate-600">LGPD (Brasil)</th>
+                                        <th class="text-left py-3 px-4 font-semibold text-sm text-slate-600">GDPR (UE)</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="comparativo-tbody" class="text-slate-700">
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <div>
+                        <h3 class="text-2xl font-semibold text-teal-700 mb-6 text-center">Privacy by Design & by Default</h3>
+                        <div class="grid md:grid-cols-2 gap-8">
+                            <div class="bg-white p-6 rounded-lg shadow">
+                                <h4 class="font-bold text-lg text-slate-800">🛡️ Privacy by Design (Desde a Concepção)</h4>
+                                <p class="mt-2 text-slate-600">Abordagem proativa que integra a privacidade em todo o ciclo de vida do desenvolvimento (SDLC). A proteção de dados é um requisito fundamental desde o início.</p>
+                                <ul id="by-design-list" class="mt-4 space-y-2 text-sm list-inside"></ul>
+                            </div>
+                            <div class="bg-white p-6 rounded-lg shadow">
+                                <h4 class="font-bold text-lg text-slate-800">⚙️ Privacy by Default (Por Padrão)</h4>
+                                <p class="mt-2 text-slate-600">A configuração inicial de qualquer sistema deve ser a mais protetiva. O usuário não precisa procurar como se proteger; a proteção é o estado padrão.</p>
+                                <ul id="by-default-list" class="mt-4 space-y-2 text-sm list-inside"></ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="teste-conhecimento" class="py-16 sm:py-20 bg-white">
+            <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="text-center">
+                    <h2 class="text-3xl font-bold tracking-tight text-slate-900 sm:text-4xl">Teste seu Conhecimento</h2>
+                    <p class="mt-4 text-lg leading-8 text-slate-600 max-w-3xl mx-auto">Aplique o que você aprendeu. Analise o cenário de TI abaixo e escolha a melhor ação em conformidade com a LGPD.</p>
+                </div>
+                <div id="quiz-container" class="mt-12 max-w-3xl mx-auto bg-slate-50 p-8 rounded-xl shadow-lg">
+                    <h3 id="quiz-question" class="text-lg font-semibold text-slate-800"></h3>
+                    <div id="quiz-options" class="mt-6 grid grid-cols-1 sm:grid-cols-2 gap-4"></div>
+                    <div id="quiz-feedback" class="mt-6 p-4 rounded-md text-sm hidden"></div>
+                    <button id="quiz-next" class="mt-6 w-full bg-teal-600 text-white font-bold py-2 px-4 rounded-lg hover:bg-teal-700 transition-colors hidden">Próxima Pergunta</button>
+                </div>
+            </div>
+        </section>
+
+        <section id="sancoes" class="py-16 sm:py-20">
+            <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="text-center">
+                    <h2 class="text-3xl font-bold tracking-tight text-slate-900 sm:text-4xl">Fiscalização e Sanções</h2>
+                    <p class="mt-4 text-lg leading-8 text-slate-600 max-w-3xl mx-auto">O descumprimento da LGPD pode levar a sanções severas aplicadas pela ANPD. O gráfico abaixo ilustra o espectro das penalidades, destacando o impacto financeiro e reputacional.</p>
+                </div>
+                <div class="mt-12">
+                    <div class="chart-container">
+                        <canvas id="sancoesChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+    
+    <footer class="bg-slate-800 text-white mt-20">
+        <div class="container mx-auto py-6 px-4 sm:px-6 lg:px-8 text-center text-sm">
+            <p>Painel Interativo da LGPD para TI - Ferramenta de Estudo.</p>
+            <p class="text-slate-400 mt-1">Conteúdo baseado no Guia Exaustivo da LGPD para Profissionais de TI.</p>
+        </div>
+    </footer>
+
+    <div id="modal" class="modal fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center p-4 z-50">
+        <div id="modal-content" class="modal-content bg-white rounded-lg shadow-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto transform scale-95">
+            <div class="p-6">
+                <div class="flex justify-between items-start">
+                    <h3 id="modal-title" class="text-2xl font-bold text-teal-800"></h3>
+                    <button id="modal-close" class="text-slate-500 hover:text-slate-800 text-3xl leading-none">&times;</button>
+                </div>
+                <div id="modal-body" class="mt-4 text-slate-600 space-y-4"></div>
+            </div>
+        </div>
+    </div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const data = {
+        principios: [
+            { icon: '🎯', title: 'Finalidade', desc: 'Tratamento para propósitos legítimos, específicos e informados.', tech: 'Registrar metadados da finalidade da coleta. Impedir o uso de dados para fins não autorizados.' },
+            { icon: '🔗', title: 'Adequação', desc: 'Compatibilidade do tratamento com a finalidade informada.', tech: 'Validar em sistemas que os dados solicitados são pertinentes à operação.' },
+            { icon: '✂️', title: 'Necessidade', desc: 'Limitação do tratamento ao mínimo necessário.', tech: 'Revisar formulários e bancos de dados para remover campos não essenciais. Implementar políticas de retenção.' },
+            { icon: '🚪', title: 'Livre Acesso', desc: 'Consulta facilitada e gratuita pelo titular sobre seus dados.', tech: 'Desenvolver um "Portal do Titular" ou painel de privacidade.' },
+            { icon: '✨', title: 'Qualidade dos Dados', desc: 'Garantia de exatidão, clareza, relevância e atualização.', tech: 'Implementar funcionalidades que permitam ao titular corrigir seus próprios dados.' },
+            { icon: ' TRANSPARENCY ', title: 'Transparência', desc: 'Informações claras, precisas e acessíveis sobre o tratamento.', tech: 'Garantir que a Política de Privacidade seja de fácil acesso e compreensível.' },
+            { icon: '🔒', title: 'Segurança', desc: 'Medidas técnicas e administrativas para proteger os dados.', tech: 'Implementar criptografia, controle de acesso, firewalls, MFA, etc.' },
+            { icon: '🛡️', title: 'Prevenção', desc: 'Adoção de medidas para prevenir a ocorrência de danos.', tech: 'Realizar Análises de Vulnerabilidade, Testes de Invasão (PenTest) de forma periódica.' },
+            { icon: '🚫', title: 'Não Discriminação', desc: 'Impossibilidade de tratamento para fins discriminatórios.', tech: 'Auditar algoritmos e modelos de IA para identificar e mitigar vieses.' },
+            { icon: '🧾', title: 'Accountability', desc: 'Capacidade de demonstrar o cumprimento da lei.', tech: 'Manter registros detalhados (logs), documentação de arquitetura e relatórios de impacto (RIPD).' }
+        ],
+        basesLegais: [
+            { icon: '👍', title: 'Consentimento', desc: 'Autorização livre, informada e inequívoca do titular.', tech: 'Requer sistema para gestão de consentimento (coleta, registro, revogação).' },
+            { icon: '⚖️', title: 'Obrigação Legal', desc: 'Tratamento exigido por lei (ex: leis fiscais).', tech: 'O sistema deve registrar a base legal e a legislação correspondente.' },
+            { icon: '🏛️', title: 'Políticas Públicas', desc: 'Para a administração pública em suas atribuições.', tech: 'Requer clara definição do escopo da política pública no sistema.' },
+            { icon: '🔬', title: 'Estudos e Pesquisa', desc: 'Por órgão de pesquisa, garantindo anonimização.', tech: 'Implementar rotinas de anonimização robustas antes da análise.' },
+            { icon: '✍️', title: 'Execução de Contrato', desc: 'Necessário para cumprir um contrato com o titular.', tech: 'Os dados coletados devem ser estritamente os necessários para o contrato.' },
+            { icon: '📜', title: 'Exercício de Direitos', desc: 'Em processos judiciais, administrativos ou arbitrais.', tech: 'Sistema deve permitir o bloqueio e retenção de dados para fins legais.' },
+            { icon: '❤️', title: 'Proteção da Vida', desc: 'Para proteger a vida ou a integridade física.', tech: 'Justificativa deve ser documentada e o acesso restrito.' },
+            { icon: '⚕️', title: 'Tutela da Saúde', desc: 'Por profissionais de saúde ou autoridades sanitárias.', tech: 'Controles de acesso e segurança reforçados para dados de saúde.' },
+            { icon: '📈', title: 'Legítimo Interesse', desc: 'Interesse do controlador, com balanceamento de direitos.', tech: 'Exige documentação do Teste de Balanceamento (LIA) e, possivelmente, RIPD.' },
+            { icon: '💳', title: 'Proteção do Crédito', desc: 'Para atividades de birôs de crédito.', tech: 'Aplicável a cenários específicos e regulados do setor financeiro.' }
+        ],
+        direitos: [
+            { icon: '✅', title: 'Confirmação e Acesso', desc: 'Saber se seus dados são tratados e ter acesso a eles.', tech: 'API para buscar e consolidar dados de um titular em todos os sistemas.' },
+            { icon: '✏️', title: 'Correção', desc: 'Corrigir dados incompletos, inexatos ou desatualizados.', tech: 'Interface de "Editar Perfil" com propagação da correção para sistemas integrados.' },
+            { icon: '🗑️', title: 'Anonimização, Bloqueio ou Eliminação', desc: 'De dados desnecessários, excessivos ou ilegais.', tech: 'Funções de soft/hard delete, rotinas de anonimização e lógica para identificar dados obsoletos.' },
+            { icon: '➡️', title: 'Portabilidade', desc: 'Transferir seus dados para outro fornecedor.', tech: 'Endpoint de API seguro para exportação em formato estruturado (JSON, XML).' },
+            { icon: '❌', title: 'Eliminação (com consentimento)', desc: 'Apagar dados cujo tratamento foi consentido.', tech: 'Workflow de exclusão acionado pela revogação do consentimento.' },
+            { icon: '🤝', title: 'Informação de Compartilhamento', desc: 'Saber com quais entidades seus dados foram compartilhados.', tech: 'Log de auditoria de todas as operações de compartilhamento de dados.' },
+            { icon: 'ℹ️', title: 'Informação sobre Não Consentir', desc: 'Saber as consequências de não fornecer o consentimento.', tech: 'Textos claros nas interfaces de coleta (ex: banners de cookies).' },
+            { icon: '↩️', title: 'Revogação do Consentimento', desc: 'Retirar a autorização a qualquer momento.', tech: 'Mecanismo de revogação simples e acessível (ex: botão no painel de privacidade).' },
+            { icon: '🤖', title: 'Revisão de Decisões Automatizadas', desc: 'Pedir revisão de decisões tomadas apenas por algoritmos.', tech: 'Processo de intervenção humana e log dos critérios do algoritmo.' }
+        ],
+        atores: {
+            controlador: {
+                titulo: 'Controlador',
+                descricao: 'É a entidade (empresa, órgão público) que toma as decisões principais sobre o tratamento de dados. Ele define a finalidade ("por que os dados são coletados") e os meios essenciais ("como serão tratados"). É o principal responsável pela conformidade perante a lei e os titulares.',
+                tech: 'A TI deve fornecer ao controlador as ferramentas para governança, como painéis de controle, relatórios de conformidade e suporte para a elaboração do RIPD. A equipe técnica é responsável por implementar as políticas de segurança e privacidade definidas pelo controlador.'
+            },
+            operador: {
+                titulo: 'Operador',
+                descricao: 'É a entidade que realiza o tratamento de dados em nome e sob as instruções do controlador. Exemplos comuns são provedores de nuvem (AWS, Azure), plataformas de SaaS e agências de marketing. O operador não define a finalidade do tratamento.',
+                tech: 'Se sua empresa é uma operadora, a TI deve construir uma plataforma segura e que ofereça aos clientes (controladores) as funcionalidades para que eles cumpram a LGPD. Isso inclui APIs para exclusão e portabilidade de dados, logs de acesso auditáveis e configurações de segurança robustas.'
+            },
+            dpo: {
+                titulo: 'Encarregado (DPO)',
+                descricao: 'O Data Protection Officer é a pessoa indicada para atuar como o canal de comunicação entre o controlador, os titulares dos dados e a Autoridade Nacional (ANPD). Ele orienta a empresa sobre as melhores práticas e fiscaliza a conformidade interna.',
+                tech: 'A TI deve colaborar estreitamente com o DPO, fornecendo acesso a informações sobre os sistemas, fluxos de dados, logs de segurança e relatórios de incidentes. A equipe técnica implementa os controles e procedimentos recomendados pelo DPO para mitigar riscos.'
+            }
+        },
+        comparativo: [
+            { criterio: 'Bases Legais', lgpd: '10 bases, incluindo "proteção do crédito".', gdpr: '6 bases legais mais amplas.' },
+            { criterio: 'Notificação de Incidente', lgpd: '"Prazo razoável" a ser definido pela ANPD.', gdpr: 'Prazo rígido de até 72 horas para notificar a autoridade.' },
+            { criterio: 'Dados de Falecidos', lgpd: 'Direitos podem ser exercidos por herdeiros.', gdpr: 'Não se aplica a falecidos; regulação local.' },
+            { criterio: 'Multas', lgpd: 'Até 2% do faturamento no Brasil, limite de R$ 50 milhões.', gdpr: 'Até 4% do faturamento GLOBAL ou € 20 milhões.' },
+            { criterio: 'Encarregado (DPO)', lgpd: 'Obrigatório, mas ANPD pode dispensar para pequenas empresas.', gdpr: 'Obrigatório em casos específicos (órgãos públicos, larga escala).' }
+        ],
+        privacyLists: {
+            design: [
+                { icon: '🗺️', text: 'Mapeamento de dados na fase de requisitos.' },
+                { icon: '🗑️', text: 'Minimização de dados no modelo de banco de dados.' },
+                { icon: '📝', text: 'Avaliação de impacto (RIPD) antes do desenvolvimento.' },
+                { icon: '🏰', text: 'Segurança como pilar da arquitetura.' },
+            ],
+            default: [
+                { icon: '📴', text: 'Coleta de dados de telemetria desabilitada por padrão.' },
+                { icon: '🔒', text: 'Perfis de usuário privados por padrão.' },
+                { icon: '☐', text: 'Caixas de consentimento (opt-in) nunca pré-marcadas.' },
+                { icon: '⏳', text: 'Retenção de dados pelo menor tempo necessário.' },
+            ]
+        },
+        quiz: [
+            {
+                question: "Sua equipe de TI está desenvolvendo um novo portal de e-commerce. A equipe de marketing solicita a inclusão de um campo 'time de futebol de preferência' no formulário de cadastro para futuras campanhas segmentadas. Qual princípio da LGPD é mais diretamente desafiado por esta solicitação?",
+                options: ["Segurança", "Necessidade", "Livre Acesso", "Qualidade dos Dados"],
+                answer: "Necessidade",
+                explanation: "Correto! O princípio da Necessidade (ou minimização de dados) dita que apenas os dados estritamente necessários para a finalidade informada (neste caso, a compra) devem ser coletados. A preferência por um time de futebol é, a princípio, desnecessária para a transação comercial."
+            },
+            {
+                question: "Um usuário solicita a exclusão de sua conta em sua plataforma. O tratamento dos dados dele era baseado em consentimento. Sua equipe executa um `DELETE` no registro do usuário no banco de dados principal. Qual é uma falha técnica comum neste processo?",
+                options: ["Não gerar um log da exclusão", "Não apagar os dados das fitas de backup", "Não informar o usuário sobre a exclusão", "Todas as anteriores"],
+                answer: "Todas as anteriores",
+                explanation: "Correto! A conformidade exige mais do que um simples delete. É preciso registrar a ação para fins de accountability, ter uma política para lidar com dados em backups (que não devem ser restaurados sem reaplicar a exclusão) e comunicar a conclusão ao titular."
+            }
+        ]
+    };
+
+    const modal = document.getElementById('modal');
+    const modalContent = document.getElementById('modal-content');
+    const modalTitle = document.getElementById('modal-title');
+    const modalBody = document.getElementById('modal-body');
+    const modalClose = document.getElementById('modal-close');
+
+    function openModal(title, description, techImplication) {
+        modalTitle.textContent = title;
+        modalBody.innerHTML = `
+            <p class="text-base">${description}</p>
+            <div class="mt-4 pt-4 border-t border-slate-200">
+                <h4 class="font-semibold text-slate-800">Implicação Técnica para TI:</h4>
+                <p class="mt-1 text-sm bg-slate-100 p-3 rounded-md">${techImplication}</p>
+            </div>
+        `;
+        modal.style.display = 'flex';
+        setTimeout(() => {
+            modal.style.opacity = '1';
+            modalContent.style.transform = 'scale(1)';
+        }, 10);
+    }
+
+    function closeModal() {
+        modal.style.opacity = '0';
+        modalContent.style.transform = 'scale(0.95)';
+        setTimeout(() => {
+            modal.style.display = 'none';
+        }, 300);
+    }
+
+    modalClose.addEventListener('click', closeModal);
+    modal.addEventListener('click', (e) => {
+        if (e.target === modal) {
+            closeModal();
+        }
+    });
+
+    function createGrid(containerId, items, color) {
+        const grid = document.getElementById(containerId);
+        items.forEach(item => {
+            const card = document.createElement('div');
+            card.className = `card bg-white p-4 rounded-lg shadow-sm border-l-4 border-${color}-500 cursor-pointer flex flex-col items-center text-center`;
+            card.innerHTML = `<div class="text-3xl mb-2">${item.icon}</div><h4 class="font-semibold text-slate-800">${item.title}</h4>`;
+            card.addEventListener('click', () => openModal(item.title, item.desc, item.tech));
+            grid.appendChild(card);
+        });
+    }
+
+    createGrid('principios-grid', data.principios, 'teal');
+    createGrid('bases-grid', data.basesLegais, 'amber');
+    createGrid('direitos-grid', data.direitos, 'sky');
+    
+    function populateList(containerId, items) {
+        const list = document.getElementById(containerId);
+        items.forEach(item => {
+            const li = document.createElement('li');
+            li.innerHTML = `<span class="mr-2">${item.icon}</span> ${item.text}`;
+            list.appendChild(li);
+        });
+    }
+    
+    populateList('by-design-list', data.privacyLists.design);
+    populateList('by-default-list', data.privacyLists.default);
+
+
+    const atorBoxes = document.querySelectorAll('.ator-box');
+    const detalheTitulo = document.getElementById('ator-detalhe-titulo');
+    const detalheDescricao = document.getElementById('ator-detalhe-descricao');
+
+    atorBoxes.forEach(box => {
+        box.addEventListener('click', () => {
+            const atorId = box.id.split('-')[1];
+            const atorData = data.atores[atorId];
+            
+            detalheTitulo.textContent = atorData.titulo;
+            detalheDescricao.innerHTML = `
+                <p>${atorData.descricao}</p>
+                <div class="mt-4 pt-4 border-t border-slate-200">
+                    <h4 class="font-semibold text-slate-800">Implicação para a TI:</h4>
+                    <p class="mt-1 text-sm">${atorData.tech}</p>
+                </div>
+            `;
+            
+            atorBoxes.forEach(b => b.classList.remove('ring-2', 'ring-offset-2', 'ring-teal-500', 'ring-amber-500', 'ring-sky-500'));
+            
+            if(atorId === 'controlador') box.classList.add('ring-2', 'ring-offset-2', 'ring-teal-500');
+            if(atorId === 'operador') box.classList.add('ring-2', 'ring-offset-2', 'ring-amber-500');
+            if(atorId === 'dpo') box.classList.add('ring-2', 'ring-offset-2', 'ring-sky-500');
+        });
+    });
+    
+    const comparativoTbody = document.getElementById('comparativo-tbody');
+    data.comparativo.forEach(item => {
+        const row = document.createElement('tr');
+        row.className = 'border-b border-slate-200 hover:bg-slate-50 transition-colors';
+        row.innerHTML = `
+            <td class="py-3 px-4 font-medium">${item.criterio}</td>
+            <td class="py-3 px-4">${item.lgpd}</td>
+            <td class="py-3 px-4">${item.gdpr}</td>
+        `;
+        comparativoTbody.appendChild(row);
+    });
+
+    const sancoesCtx = document.getElementById('sancoesChart').getContext('2d');
+    new Chart(sancoesCtx, {
+        type: 'bar',
+        data: {
+            labels: ['Advertência', 'Multa Simples', 'Multa Diária', 'Publicização', 'Bloqueio/Eliminação', 'Suspensão/Proibição'],
+            datasets: [{
+                label: 'Nível de Impacto (Financeiro/Reputacional)',
+                data: [10, 80, 85, 90, 95, 100],
+                backgroundColor: 'rgba(20, 184, 166, 0.6)',
+                borderColor: 'rgba(15, 118, 110, 1)',
+                borderWidth: 1
+            }]
+        },
+        options: {
+            indexAxis: 'y',
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: { display: false },
+                tooltip: {
+                    callbacks: {
+                        label: function(context) {
+                            let label = context.dataset.label || '';
+                            if (label) { label += ': '; }
+                            if(context.label === 'Multa Simples') {
+                                label += 'Até 2% do faturamento (limite R$ 50 mi)';
+                            } else {
+                                label += 'Impacto ' + (context.raw > 90 ? 'Crítico' : (context.raw > 80 ? 'Severo' : 'Moderado'));
+                            }
+                            return label;
+                        }
+                    }
+                }
+            },
+            scales: { x: { beginAtZero: true, ticks: { display: false } } }
+        }
+    });
+
+    const quizQuestionEl = document.getElementById('quiz-question');
+    const quizOptionsEl = document.getElementById('quiz-options');
+    const quizFeedbackEl = document.getElementById('quiz-feedback');
+    const quizNextBtn = document.getElementById('quiz-next');
+    let currentQuestionIndex = 0;
+
+    function loadQuestion() {
+        const questionData = data.quiz[currentQuestionIndex];
+        quizQuestionEl.textContent = questionData.question;
+        quizOptionsEl.innerHTML = '';
+        quizFeedbackEl.classList.add('hidden');
+        quizNextBtn.classList.add('hidden');
+
+        questionData.options.forEach(optionText => {
+            const button = document.createElement('button');
+            button.textContent = optionText;
+            button.className = 'quiz-option bg-white p-4 rounded-lg border-2 border-slate-300 text-left';
+            button.addEventListener('click', () => checkAnswer(optionText, button));
+            quizOptionsEl.appendChild(button);
+        });
+    }
+
+    function checkAnswer(selectedOption, selectedButton) {
+        const questionData = data.quiz[currentQuestionIndex];
+        const isCorrect = selectedOption === questionData.answer;
+
+        Array.from(quizOptionsEl.children).forEach(btn => {
+            btn.disabled = true;
+            if (btn.textContent === questionData.answer) {
+                btn.classList.add('bg-green-100', 'border-green-500');
+            } else {
+                btn.classList.add('bg-slate-100');
+            }
+        });
+
+        if (isCorrect) {
+            selectedButton.classList.remove('bg-slate-100');
+            selectedButton.classList.add('bg-green-100', 'border-green-500');
+            quizFeedbackEl.className = 'mt-6 p-4 rounded-md text-sm bg-green-100 text-green-800';
+        } else {
+            selectedButton.classList.remove('bg-slate-100');
+            selectedButton.classList.add('bg-red-100', 'border-red-500');
+            quizFeedbackEl.className = 'mt-6 p-4 rounded-md text-sm bg-red-100 text-red-800';
+        }
+        
+        quizFeedbackEl.textContent = questionData.explanation;
+        quizFeedbackEl.classList.remove('hidden');
+        
+        if (currentQuestionIndex < data.quiz.length - 1) {
+            quizNextBtn.classList.remove('hidden');
+        }
+    }
+
+    quizNextBtn.addEventListener('click', () => {
+        currentQuestionIndex++;
+        loadQuestion();
+    });
+
+    loadQuestion();
+});
+</script>
+
+</body>
+</html>
